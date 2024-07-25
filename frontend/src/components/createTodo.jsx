@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import axios from "axios";
 
 export function CreateTodo() {
     const [title, setTitle] = useState("");
@@ -7,47 +8,36 @@ export function CreateTodo() {
 
     
     useEffect(() => {
-        fetch("http://localhost:3000/todos")
-            .then(res => res.json())
-            .then(data => {
-                setTodos(data.todos);
+        axios.get("http://localhost:3000/todos")
+            .then(res => {
+                setTodos(res.data.todos);
             });
     }, []);
 
-   
+    
     const addTodo = () => {
-        fetch("http://localhost:3000/todo", {
-            method: "POST",
-            body: JSON.stringify({ title, description }),
-            headers: { "Content-Type": "application/json" }
-        })
-            .then(async res => {
-                const json = await res.json();
+        axios.post("http://localhost:3000/todo", { title, description })
+            .then(res => {
                 alert("Todo Added");
 
                 
-                fetch("http://localhost:3000/todos")
-                    .then(res => res.json())
-                    .then(data => {
-                        setTodos(data.todos);
+                axios.get("http://localhost:3000/todos")
+                    .then(res => {
+                        setTodos(res.data.todos);
                     });
             });
     };
 
     
     const deleteTodo = (id) => {
-        fetch(`http://localhost:3000/todos/${id}`, {
-            method: "DELETE"
-        })
-            .then(async res => {
-                const json = await res.json();
+        axios.delete(`http://localhost:3000/todos/${id}`)
+            .then(res => {
                 alert("Todo Deleted");
 
-                // Fetch the updated list of todos
-                fetch("http://localhost:3000/todos")
-                    .then(res => res.json())
-                    .then(data => {
-                        setTodos(data.todos);
+                
+                axios.get("http://localhost:3000/todos")
+                    .then(res => {
+                        setTodos(res.data.todos);
                     });
             });
     };
